@@ -57,6 +57,10 @@ def visualise_canny_thresholds(img: np.ndarray):
             max_val += 10
         elif k == ord('j'):
             break
+        elif k == ord('h'):
+            lines = cv.HoughLines(edge_image, 1, np.pi / 180, 0)
+            cv.imshow('Display',draw_hough_lines(img, lines))
+            cv.waitKey(0)
         else:
             print(' o --> increase min threshold \n O --> decrease \n l --> '
                   'decrease max threshold \n L --> increase \n j --> exit')

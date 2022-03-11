@@ -20,6 +20,8 @@ for pic_path in picture_paths:
     processed_image = im.preprocess(image)
     edge_image = cv.Canny(processed_image, 200, 255, L2gradient=True)
     lines = cv.HoughLines(edge_image, 1, np.pi / 180, 0)
-    processed_image = im.draw_hough_lines(processed_image, lines,1)
+    processed_image = im.draw_hough_lines(processed_image, lines, 5)
     cv.imshow('Display', processed_image)
-    cv.waitKey(0)
+    k = cv.waitKey(0)
+    if k == ord('f'):
+        im.visualise_canny_thresholds(im.preprocess(image))
