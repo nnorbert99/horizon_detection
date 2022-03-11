@@ -1,3 +1,5 @@
+import imghdr
+
 import cv2 as cv
 import os
 import image_preprocessor as im
@@ -11,6 +13,7 @@ if not os.path.exists(path):
     print(f'No Source Image directory found we created one for you at {path}')
 
 file_paths = [os.path.join(path, f) for f in os.listdir(path) if os.path.isfile(os.path.join(path, f))]
+picture_paths = [f for f in file_paths if imghdr.what(f) in ['jpg', 'png', 'bmp', 'gif', 'tiff', 'jpeg']]
 image = cv.imread(os.path.join(path, 'example.jpg'))
 processed_image = im.preprocess(image)
 edge_image = cv.Canny(processed_image, 200, 255, L2gradient=True)
