@@ -5,8 +5,11 @@ import os
 import image_preprocessor as im
 import numpy as np
 
+PREPRO_HEIGHT = 64
+PREPRO_WIDTH = 64
 
-def canny_plus_hough_method(pic_paths: os.PathLike) -> None:
+
+def canny_plus_hough_method(pic_paths: [str]) -> None:
     """
 
     :param pic_paths:
@@ -14,7 +17,7 @@ def canny_plus_hough_method(pic_paths: os.PathLike) -> None:
     """
     for pic_path in picture_paths:
         image = cv.imread(pic_path)
-        processed_image = im.preprocess(image)
+        processed_image = im.preprocess(image, dsize=(PREPRO_WIDTH, PREPRO_HEIGHT))
         edge_image = cv.Canny(processed_image, 200, 255, L2gradient=True)
         lines = cv.HoughLines(edge_image, 1, np.pi / 180, 0)
         processed_image = im.draw_hough_lines(processed_image, lines, 3)
