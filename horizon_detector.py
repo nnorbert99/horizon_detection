@@ -3,10 +3,11 @@ import imghdr
 import cv2 as cv
 import os
 import image_preprocessor as im
+import variance_method as vm
 import numpy as np
 
-PREPRO_HEIGHT = 64
-PREPRO_WIDTH = 64
+PREPRO_HEIGHT = 60
+PREPRO_WIDTH = 80
 
 
 def canny_plus_hough_method(pic_paths: [str]) -> None:
@@ -38,4 +39,8 @@ if __name__ == '__main__':
     file_paths = [os.path.join(path, f) for f in os.listdir(path) if os.path.isfile(os.path.join(path, f))]
     picture_paths = [f for f in file_paths if imghdr.what(f) in ['jpg', 'png', 'bmp', 'gif', 'tiff', 'jpeg']]
 
-    canny_plus_hough_method(picture_paths)
+    #canny_plus_hough_method(picture_paths)
+    for p in picture_paths:
+        img = cv.imread(p)
+        img = im.preprocess(img)
+        vm.optimization_criterion(img,(1,1))
