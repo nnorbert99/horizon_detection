@@ -16,14 +16,14 @@ def optimization_criterion(img: np.ndarray, line: tuple) -> float:
     m, b = line
     ground_pixels = np.ndarray([0, 3])
     sky_pixels = np.ndarray([0, 3])
-    for x in range(0, hd.COARSE_SEARCH_WIDTH):
+    for x in range(0, img.shape[1]):
         y = m * x + b
-        y = min(y, hd.COARSE_SEARCH_HEIGHT)
+        y = min(y, img.shape[0])
         y = max(y, 0)
         y = int(y)
         one_collum = img[:, x, :]
         sky_pixels_oc = one_collum[0:y]
-        ground_pixels_oc = one_collum[y:hd.COARSE_SEARCH_HEIGHT]
+        ground_pixels_oc = one_collum[y:img.shape[0]]
         ground_pixels = np.concatenate((ground_pixels, ground_pixels_oc))
         sky_pixels = np.concatenate((sky_pixels, sky_pixels_oc))
     if sky_pixels.shape[0] != 1 and ground_pixels.shape[0] != 1:
@@ -53,18 +53,23 @@ def get_theta_r_pairs(resolution_th: int, resolution_r: int) -> Tuple[float, int
             yield k * (np.pi / 180), i
 
 
-def get_m_and_b(m_res: int, b_res: int, m_range_in_degree: tuple = (-60, 60)) -> tuple:
+def get_m_and_b(m_res: int, b_res: int, b_range_in_pixels: tuple, m_range_in_degree: tuple = (-60, 60)) -> tuple:
     """
 
+    :param b_range_in_pixels:
     :param m_res:
     :param b_res:
     :param m_range_in_degree:
     :return:
     """
     ms = [np.arctan(np.deg2rad(x)) for x in range(*m_range_in_degree, m_res)]
-    for b in range(0, hd.COARSE_SEARCH_HEIGHT, b_res):
+    for b in range(*b_range_in_pixels, b_res):
         for m in ms:
             yield m, b
+
+
+def fine_search():
+    pass
 
 
 if __name__ == '__main__':
