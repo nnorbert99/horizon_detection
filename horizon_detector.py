@@ -6,10 +6,10 @@ import image_preprocessor as im
 import variance_method as vm
 import numpy as np
 
-COARSE_SEARCH_HEIGHT = 60
-COARSE_SEARCH_WIDTH = 80
-FINE_SEARCH_HEIGHT = 600
-FINE_SEARCH_WIDTH = 800
+COARSE_SEARCH_HEIGHT = 30
+COARSE_SEARCH_WIDTH = 40
+FINE_SEARCH_HEIGHT = 300
+FINE_SEARCH_WIDTH = 400
 
 
 def canny_plus_hough_method(pic_paths: [str]) -> None:

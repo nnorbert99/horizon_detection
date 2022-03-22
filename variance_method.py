@@ -68,7 +68,8 @@ def get_m_and_b(m_res: int, b_res: int, b_range_in_pixels: tuple, m_range_in_deg
             yield m, b
 
 
-def fine_search(img: np.ndarray, line_params: tuple, max_iteration_number: int = 50) -> tuple:
+def fine_search(img: np.ndarray, line_params: tuple, max_iteration_number: int = 50, fine_b_res: int = 10,
+                fine_m_res: int = 1) -> tuple:
     """
 
     :param img:
@@ -78,13 +79,13 @@ def fine_search(img: np.ndarray, line_params: tuple, max_iteration_number: int =
     """
     cnt = 0
     best_m, best_b = line_params
-    J_best = optimization_criterion(img, line_params)
-    image = img/255
+    image = img / 255
+    J_best = optimization_criterion(image, line_params)
     while True:
-        m_decreased = (best_m - np.arctan(np.deg2rad(1)), best_b)
-        m_increased = (best_m + np.arctan(np.deg2rad(1)), best_b)
-        b_decreased = (best_m, best_b - 10)
-        b_increased = (best_m, best_b + 10)
+        m_decreased = (best_m - np.arctan(np.deg2rad(fine_m_res)), best_b)
+        m_increased = (best_m + np.arctan(np.deg2rad(fine_m_res)), best_b)
+        b_decreased = (best_m, best_b - fine_b_res)
+        b_increased = (best_m, best_b + fine_b_res)
         search_space = {m_decreased: optimization_criterion(image, m_decreased),
                         m_increased: optimization_criterion(image, m_increased),
                         b_decreased: optimization_criterion(image, b_increased),
