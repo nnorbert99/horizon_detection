@@ -92,3 +92,18 @@ def draw_hough_lines(img: np.ndarray, lines: np.ndarray, line_number: int = 5) -
     return img
 
 
+def draw_general_line(img, line_params):
+    """
+    
+    :param img:
+    :param line_params:
+    :return:
+    """
+    m, b = line_params
+    for x in range(0, img.shape[1]):
+        y = m * x + b
+        y = min(y, img.shape[0])
+        y = max(y, 0)
+        y = int(y)
+        img[y - 1, x, :] = [0, 0, 255]
+    return img
