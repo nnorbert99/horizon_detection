@@ -34,9 +34,10 @@ def canny_plus_hough_method(pic_paths: [str]) -> None:
             im.visualise_canny_thresholds(im.preprocess(image))
 
 
-def variance_method(pic_paths: [str], res_m, res_b) -> List[np.ndarray]:
+def variance_method(pic_paths: [str], res_m, res_b, render=True) -> List[Tuple[np.ndarray, str]]:
     """
 
+    :param render:
     :param res_b:
     :param res_m:
     :param pic_paths:
@@ -60,9 +61,11 @@ def variance_method(pic_paths: [str], res_m, res_b) -> List[np.ndarray]:
         fine_m, fine_b = vm.fine_search(original, (coarse_m, coarse_b), 5)
         im.draw_general_line(original, (coarse_m, coarse_b), color=[255, 255, 255])
         im.draw_general_line(original, (fine_m, fine_b))
-        cv.imshow('display', original)
-        cv.waitKey(0)
-        output_pics.append(original)
+        if render:
+            cv.imshow('display', original)
+            cv.waitKey(0)
+        filename = os.path.basename(pic_path)
+        output_pics.append((original, filename))
     return output_pics
 
 
@@ -71,12 +74,17 @@ if __name__ == '__main__':
     parser.add_argument('-s', '--save', action='store_true', help='Flag saving the output needed or not')
     parser.add_argument('--output', help='The output folder path')
     parser.add_argument('--input', help='The input folder directory')
-    parser.add_argument('--COARSE_SEARCH_RESOLUTION', type=Tuple[int, int], help='Coarse search image resolution')
-    parser.add_argument('--FINE_SEARCH_RESOLUTION', type=Tuple[int, int],
+    parser.add_argument('-csr', '--COARSE_SEARCH_RESOLUTION', type=int, nargs='+',
+                        help='Coarse search image resolution')
+    parser.add_argument('-fsr', '--FINE_SEARCH_RESOLUTION', type=int, nargs='+',
                         help='Fine search image resolution also the output resolution')
-    parser.add_argument('-r', '--render', action='store_true', help='If rendering the output needed')
+    parser.add_argument('-nr', '--no_render', action='store_false', help='If rendering the output is not needed')
 
     args = parser.parse_args()
+    if args.COARSE_SEARCH_RESOLUTION is not None:
+        COARSE_SEARCH_WIDTH, COARSE_SEARCH_HEIGHT = args.COARSE_SEARCH_RESOLUTION
+    if args.FINE_SEARCH_RESOLUTION is not None:
+        FINE_SEARCH_WIDTH, FINE_SEARCH_HEIGHT = args.FINE_SEARCH_RESOLUTION
     if args.input is None:
         cwd = os.getcwd()
         path = os.path.join(cwd, 'Source Images')
@@ -90,5 +98,17 @@ if __name__ == '__main__':
     file_paths = [os.path.join(path, f) for f in os.listdir(path) if os.path.isfile(os.path.join(path, f))]
     picture_paths = [f for f in file_paths if imghdr.what(f) in ['jpg', 'png', 'bmp', 'gif', 'tiff', 'jpeg']]
 
-    canny_plus_hough_method(picture_paths)
-    variance_method(picture_paths, 10, 1)
+    # canny_plus_hough_method(picture_paths)
+    output = variance_method(picture_paths, 10, 1, render=args.no_render)
+    if args.save:
+        if args.output is None:
+            cwd = os.getcwd()
+            output_path = os.path.join(cwd, 'Output Images')
+        else:
+            output_path = args.output
+        if not os.path.exists(output_path):
+            os.makedirs(output_path)
+        print(f'Saving pictures to {output_path}')
+        for pic, filename in output:
+            output_full_path = os.path.join(output_path, filename)
+            cv.imwrite(output_full_path, pic)
