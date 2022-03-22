@@ -6,8 +6,10 @@ import image_preprocessor as im
 import variance_method as vm
 import numpy as np
 
-PREPRO_HEIGHT = 60
-PREPRO_WIDTH = 80
+COARSE_SEARCH_HEIGHT = 60
+COARSE_SEARCH_WIDTH = 80
+FINE_SEARCH_HEIGHT = 600
+FINE_SEARCH_WIDTH = 800
 
 
 def canny_plus_hough_method(pic_paths: [str]) -> None:
@@ -18,7 +20,7 @@ def canny_plus_hough_method(pic_paths: [str]) -> None:
     """
     for pic_path in pic_paths:
         image = cv.imread(pic_path)
-        processed_image = im.preprocess(image, dsize=(PREPRO_WIDTH, PREPRO_HEIGHT))
+        processed_image = im.preprocess(image, dsize=(COARSE_SEARCH_WIDTH, COARSE_SEARCH_HEIGHT))
         edge_image = cv.Canny(processed_image, 200, 255, L2gradient=True)
         lines = cv.HoughLines(edge_image, 1, np.pi / 180, 0)
         processed_image = im.draw_hough_lines(processed_image, lines, 3)
@@ -28,31 +30,31 @@ def canny_plus_hough_method(pic_paths: [str]) -> None:
             im.visualise_canny_thresholds(im.preprocess(image))
 
 
-def variance_method(pic_paths: [str], res_th, res_r) -> None:
+def variance_method(pic_paths: [str], res_m, res_b) -> None:
     """
 
+    :param res_b:
+    :param res_m:
     :param pic_paths:
-    :param res_th:
-    :param res_r:
     :return:
     """
     for pic_path in pic_paths:
         J = 0
         line = (0, 0)
         image = cv.imread(pic_path)
-        processed_image = im.preprocess(image, dsize=(PREPRO_WIDTH, PREPRO_HEIGHT))
+        processed_image = im.preprocess(image, dsize=(COARSE_SEARCH_WIDTH, COARSE_SEARCH_HEIGHT))
         processed_image = processed_image / 255
-        for (current_line) in vm.get_m_and_b():
+        for (current_line) in vm.get_m_and_b(res_m, res_b):
             current_J = vm.optimization_criterion(processed_image, current_line)
             if current_J > J:
                 line = current_line
                 J = current_J
-        original = im.preprocess(image)
+        original = im.preprocess(image, dsize=(FINE_SEARCH_WIDTH, FINE_SEARCH_HEIGHT))
         m, b = line
-        b = b * 600 / PREPRO_HEIGHT
-        for x in range(0, 800):
+        b = b * FINE_SEARCH_HEIGHT / COARSE_SEARCH_HEIGHT
+        for x in range(0, FINE_SEARCH_WIDTH):
             y = m * x + b
-            y = min(y, 600)
+            y = min(y, FINE_SEARCH_HEIGHT)
             y = max(y, 0)
             y = int(y)
             original[y - 1, x, :] = [0, 0, 255]

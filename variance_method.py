@@ -16,14 +16,14 @@ def optimization_criterion(img: np.ndarray, line: tuple) -> float:
     m, b = line
     ground_pixels = np.ndarray([0, 3])
     sky_pixels = np.ndarray([0, 3])
-    for x in range(0, hd.PREPRO_WIDTH):
+    for x in range(0, hd.COARSE_SEARCH_WIDTH):
         y = m * x + b
-        y = min(y, hd.PREPRO_HEIGHT)
+        y = min(y, hd.COARSE_SEARCH_HEIGHT)
         y = max(y, 0)
         y = int(y)
         one_collum = img[:, x, :]
         sky_pixels_oc = one_collum[0:y]
-        ground_pixels_oc = one_collum[y:hd.PREPRO_HEIGHT]
+        ground_pixels_oc = one_collum[y:hd.COARSE_SEARCH_HEIGHT]
         ground_pixels = np.concatenate((ground_pixels, ground_pixels_oc))
         sky_pixels = np.concatenate((sky_pixels, sky_pixels_oc))
     if sky_pixels.shape[0] != 1 and ground_pixels.shape[0] != 1:
@@ -47,13 +47,13 @@ def get_theta_r_pairs(resolution_th: int, resolution_r: int) -> Tuple[float, int
     :param resolution_r:
     :return:
     """
-    diagonal = int((hd.PREPRO_HEIGHT ** 2 + hd.PREPRO_HEIGHT ** 2) ** (1 / 2))
+    diagonal = int((hd.COARSE_SEARCH_HEIGHT ** 2 + hd.COARSE_SEARCH_HEIGHT ** 2) ** (1 / 2))
     for i in range(1, diagonal, resolution_r):
         for k in range(1, 180, resolution_th):
             yield k * (np.pi / 180), i
 
 
-def get_m_and_b(m_res, b_res, m_range_in_degree=(-60, 60)):
+def get_m_and_b(m_res: int, b_res: int, m_range_in_degree: tuple = (-60, 60)) -> tuple:
     """
 
     :param m_res:
@@ -62,12 +62,12 @@ def get_m_and_b(m_res, b_res, m_range_in_degree=(-60, 60)):
     :return:
     """
     ms = [np.arctan(np.deg2rad(x)) for x in range(*m_range_in_degree, m_res)]
-    for b in range(0, hd.PREPRO_HEIGHT, b_res):
+    for b in range(0, hd.COARSE_SEARCH_HEIGHT, b_res):
         for m in ms:
             yield m, b
 
 
 if __name__ == '__main__':
-    img = np.random.random([hd.PREPRO_HEIGHT, hd.PREPRO_WIDTH, 3])
+    img = np.random.random([hd.COARSE_SEARCH_HEIGHT, hd.COARSE_SEARCH_WIDTH, 3])
     for (line) in get_theta_r_pairs(*(10, 1)):
         J_ = optimization_criterion(img, line)
