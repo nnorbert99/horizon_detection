@@ -92,9 +92,9 @@ def draw_hough_lines(img: np.ndarray, lines: np.ndarray, line_number: int = 5) -
     return img
 
 
-def draw_general_line(img, line_params):
+def draw_general_line(img: np.ndarray, line_params: tuple) -> np.ndarray:
     """
-    
+
     :param img:
     :param line_params:
     :return:

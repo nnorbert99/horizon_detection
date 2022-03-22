@@ -50,7 +50,9 @@ def variance_method(pic_paths: [str], res_m, res_b) -> None:
                 line = current_line
                 J = current_J
         original = im.preprocess(image, dsize=(FINE_SEARCH_WIDTH, FINE_SEARCH_HEIGHT))
-
+        m, b = line
+        b = b * FINE_SEARCH_HEIGHT / COARSE_SEARCH_HEIGHT
+        im.draw_general_line(original, (m, b))
         cv.imshow('display', original)
         cv.waitKey(0)
 
