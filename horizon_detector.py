@@ -47,11 +47,12 @@ def variance_method(pic_paths: [str], res_th, res_r) -> None:
             if current_J > J:
                 line = current_line
                 J = current_J
-        original = im.preprocess(image, dsize=(PREPRO_WIDTH, PREPRO_HEIGHT))
+        original = im.preprocess(image)
         m, b = line
-        for x in range(0, PREPRO_WIDTH):
+        b = b*600/PREPRO_HEIGHT
+        for x in range(0, 800):
             y = m * x + b
-            y = min(y, PREPRO_HEIGHT)
+            y = min(y, 600)
             y = max(y, 0)
             y = int(y)
             original[y - 1, x, :] = [0, 0, 255]
