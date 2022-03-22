@@ -68,8 +68,40 @@ def get_m_and_b(m_res: int, b_res: int, b_range_in_pixels: tuple, m_range_in_deg
             yield m, b
 
 
-def fine_search():
-    pass
+def fine_search(img: np.ndarray, line_params: tuple, max_iteration_number: int = 50) -> tuple:
+    """
+
+    :param img:
+    :param line_params:
+    :param max_iteration_number:
+    :return:
+    """
+    cnt = 0
+    best_m, best_b = line_params
+    J_best = optimization_criterion(img, line_params)
+    image = img/255
+    while True:
+        m_decreased = (best_m - np.arctan(np.deg2rad(1)), best_b)
+        m_increased = (best_m + np.arctan(np.deg2rad(1)), best_b)
+        b_decreased = (best_m, best_b - 10)
+        b_increased = (best_m, best_b + 10)
+        search_space = {m_decreased: optimization_criterion(image, m_decreased),
+                        m_increased: optimization_criterion(image, m_increased),
+                        b_decreased: optimization_criterion(image, b_increased),
+                        b_increased: optimization_criterion(image, b_decreased)}
+        sorted_by_values = dict(sorted(search_space.items(), key=lambda item: item[1], reverse=True))
+        best_in_search = list(sorted_by_values.items())[0]
+        if best_in_search[1] > J_best:
+            J_best = best_in_search[1]
+            best_m, best_b = best_in_search[0]
+            was_better = True
+        else:
+            was_better = False
+        cnt += 1
+        print(cnt)
+        if cnt == max_iteration_number or not was_better:
+            break
+    return best_m, best_b
 
 
 if __name__ == '__main__':

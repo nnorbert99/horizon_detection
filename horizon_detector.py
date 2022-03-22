@@ -44,15 +44,17 @@ def variance_method(pic_paths: [str], res_m, res_b) -> None:
         image = cv.imread(pic_path)
         processed_image = im.preprocess(image, dsize=(COARSE_SEARCH_WIDTH, COARSE_SEARCH_HEIGHT))
         processed_image = processed_image / 255
-        for (current_line) in vm.get_m_and_b(res_m, res_b):
+        for (current_line) in vm.get_m_and_b(res_m, res_b, (0, COARSE_SEARCH_HEIGHT)):
             current_J = vm.optimization_criterion(processed_image, current_line)
             if current_J > J:
                 line = current_line
                 J = current_J
         original = im.preprocess(image, dsize=(FINE_SEARCH_WIDTH, FINE_SEARCH_HEIGHT))
-        m, b = line
-        b = b * FINE_SEARCH_HEIGHT / COARSE_SEARCH_HEIGHT
-        im.draw_general_line(original, (m, b))
+        coarse_m, coarse_b = line
+        coarse_b = coarse_b * FINE_SEARCH_HEIGHT / COARSE_SEARCH_HEIGHT
+        fine_m, fine_b = vm.fine_search(original, (coarse_m, coarse_b),5)
+        im.draw_general_line(original, (coarse_m, coarse_b), color=[255, 255, 255])
+        im.draw_general_line(original, (fine_m, fine_b))
         cv.imshow('display', original)
         cv.waitKey(0)
 
