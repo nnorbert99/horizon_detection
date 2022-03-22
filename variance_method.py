@@ -1,10 +1,8 @@
-import time
-
-import numpy as np
 from typing import Tuple
 
+import numpy as np
+
 import horizon_detector as hd
-import cv2 as cv
 
 
 def optimization_criterion(img: np.ndarray, line: tuple) -> float:
@@ -55,9 +53,16 @@ def get_theta_r_pairs(resolution_th: int, resolution_r: int) -> Tuple[float, int
             yield k * (np.pi / 180), i
 
 
-def get_m_and_b():
-    ms = [np.arctan(np.deg2rad(x)) for x in range(-60, 60)]
-    for b in range(0, hd.PREPRO_HEIGHT):
+def get_m_and_b(m_res, b_res, m_range_in_degree=(-60, 60)):
+    """
+
+    :param m_res:
+    :param b_res:
+    :param m_range_in_degree:
+    :return:
+    """
+    ms = [np.arctan(np.deg2rad(x)) for x in range(*m_range_in_degree, m_res)]
+    for b in range(0, hd.PREPRO_HEIGHT, b_res):
         for m in ms:
             yield m, b
 
