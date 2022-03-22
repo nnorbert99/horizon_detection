@@ -15,11 +15,11 @@ def optimization_criterion(img: np.ndarray, line: tuple) -> float:
     :return:
     """
     J = 0
-    m,b = line
+    m, b = line
     ground_pixels = np.ndarray([0, 3])
     sky_pixels = np.ndarray([0, 3])
     for x in range(0, hd.PREPRO_WIDTH):
-        y = m*x+b
+        y = m * x + b
         y = min(y, hd.PREPRO_HEIGHT)
         y = max(y, 0)
         y = int(y)

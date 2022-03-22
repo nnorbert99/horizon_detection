@@ -41,22 +41,23 @@ def variance_method(pic_paths: [str], res_th, res_r) -> None:
         line = (0, 0)
         image = cv.imread(pic_path)
         processed_image = im.preprocess(image, dsize=(PREPRO_WIDTH, PREPRO_HEIGHT))
-        processed_image = processed_image/255
+        processed_image = processed_image / 255
         for (current_line) in vm.get_m_and_b():
             current_J = vm.optimization_criterion(processed_image, current_line)
             if current_J > J:
                 line = current_line
                 J = current_J
         original = im.preprocess(image, dsize=(PREPRO_WIDTH, PREPRO_HEIGHT))
-        m,b = line
-        for x in range(0,PREPRO_WIDTH):
-            y = m*x+b
+        m, b = line
+        for x in range(0, PREPRO_WIDTH):
+            y = m * x + b
             y = min(y, PREPRO_HEIGHT)
             y = max(y, 0)
             y = int(y)
-            original[y-1,x,:] = [0,0,255]
-        cv.imshow('display',original)
+            original[y - 1, x, :] = [0, 0, 255]
+        cv.imshow('display', original)
         cv.waitKey(0)
+
 
 if __name__ == '__main__':
     cwd = os.getcwd()
@@ -70,4 +71,4 @@ if __name__ == '__main__':
     picture_paths = [f for f in file_paths if imghdr.what(f) in ['jpg', 'png', 'bmp', 'gif', 'tiff', 'jpeg']]
 
     # canny_plus_hough_method(picture_paths)
-    variance_method(picture_paths,10,1)
+    variance_method(picture_paths, 10, 1)
