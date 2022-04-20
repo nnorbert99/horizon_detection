@@ -16,22 +16,28 @@ FINE_SEARCH_HEIGHT = 300
 FINE_SEARCH_WIDTH = 400
 
 
-def canny_plus_hough_method(pic_paths: [str]) -> None:
+def canny_plus_hough_method(pic_paths: [str], render: bool = True) -> List[Tuple[np.ndarray, str]]:
     """
 
+    :param render:
     :param pic_paths:
     :return:
     """
+    output_pics = []
     for pic_path in pic_paths:
         image = cv.imread(pic_path)
         processed_image = im.preprocess(image, dsize=(FINE_SEARCH_WIDTH, FINE_SEARCH_HEIGHT))
         edge_image = cv.Canny(processed_image, 200, 255, L2gradient=True)
         lines = cv.HoughLines(edge_image, 1, np.pi / 180, 0)
         processed_image = im.draw_hough_lines(processed_image, lines, 1)
-        cv.imshow('Display', processed_image)
-        k = cv.waitKey(0)
-        if k == ord('f'):
-            im.visualise_canny_thresholds(im.preprocess(image))
+        if render:
+            cv.imshow('Display', processed_image)
+            k = cv.waitKey(0)
+            if k == ord('f'):
+                im.visualise_canny_thresholds(im.preprocess(image))
+        filename = os.path.basename(pic_path)
+        output_pics.append((processed_image, filename))
+    return output_pics
 
 
 def variance_method(pic_paths: [str], res_m, res_b, render=True) -> List[Tuple[np.ndarray, str]]:
@@ -98,8 +104,8 @@ if __name__ == '__main__':
     file_paths = [os.path.join(path, f) for f in os.listdir(path) if os.path.isfile(os.path.join(path, f))]
     picture_paths = [f for f in file_paths if imghdr.what(f) in ['jpg', 'png', 'bmp', 'gif', 'tiff', 'jpeg']]
 
-    # canny_plus_hough_method(picture_paths)
-    output = variance_method(picture_paths, 10, 1, render=args.no_render)
+    can_output = canny_plus_hough_method(picture_paths, render=args.no_render)
+    var_output = variance_method(picture_paths, 10, 1, render=args.no_render)
     if args.save:
         if args.output is None:
             cwd = os.getcwd()
@@ -109,6 +115,9 @@ if __name__ == '__main__':
         if not os.path.exists(output_path):
             os.makedirs(output_path)
         print(f'Saving pictures to {output_path}')
-        for pic, filename in output:
-            output_full_path = os.path.join(output_path, filename)
+        for pic, filename in var_output:
+            output_full_path = os.path.join(output_path, 'variance_' + filename)
+            cv.imwrite(output_full_path, pic)
+        for pic, filename in can_output:
+            output_full_path = os.path.join(output_path, 'canny_' + filename)
             cv.imwrite(output_full_path, pic)
