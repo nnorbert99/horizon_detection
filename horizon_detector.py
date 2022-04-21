@@ -21,7 +21,7 @@ def canny_plus_hough_method(pic_paths: [str], render: bool = True) -> List[Tuple
     Runs the canny edge detector with the hough transform to identify the most prominent line in the picture
     :param render: if render is required needs to be set
     :param pic_paths: Path to the pictures
-    :return:
+    :return: List of result images and their names
     """
     output_pics = []
     # Iterate through the pictures
@@ -56,7 +56,7 @@ def variance_method(pic_paths: [str], res_m, res_b, render=True) -> List[Tuple[n
     :param res_b: resolution for the b parameter in the line equation
     :param res_m: resolution for the m parameter in the line equation
     :param pic_paths: path to the pictures
-    :return:
+    :return: List of result images and their names
     """
     output_pics = []
     for pic_path in pic_paths:

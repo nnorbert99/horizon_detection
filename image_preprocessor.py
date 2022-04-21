@@ -5,11 +5,11 @@ import numpy as np
 
 def preprocess(img: np.ndarray, dsize: tuple = (800, 600), mode: str = 'gaussian') -> np.ndarray:
     """
-
-    :param img:
-    :param dsize:
-    :param mode:
-    :return:
+    Contains everything that needs to be done before the methods
+    :param img: image in np.ndarray format
+    :param dsize: desired size default 800 600
+    :param mode: Modes can be defined
+    :return: Preprocessed image
     """
     image = cv.resize(img, dsize)
     # image = blur_image(image,mode)
@@ -18,10 +18,10 @@ def preprocess(img: np.ndarray, dsize: tuple = (800, 600), mode: str = 'gaussian
 
 def blur_image(img: np.ndarray, mode: str) -> np.ndarray or None:
     """
-
-    :param img:
-    :param mode:
-    :return:
+    Blurr the image with a Gaussian filter
+    :param img: Image in np.ndarray
+    :param mode: what type of blur is needed
+    :return: blured image
     """
     if mode == 'gaussian':
         sigma = img.shape[1] / 50
@@ -33,20 +33,26 @@ def blur_image(img: np.ndarray, mode: str) -> np.ndarray or None:
 
 def visualise_canny_thresholds(img: np.ndarray):
     """
-
-    :param img:
-    :return:
+    Helper function to visualize the effect of the threshold values in the canny edge detector
+    :param img: Image in np.ndarray
+    :return: Binary edge image (output of the canny edge detector)
     """
+    # Choosing the default values and the font to print it on
     min_val = 0
     max_val = 255
     font = cv.FONT_HERSHEY_SIMPLEX
 
     while True:
+        # Run the edge detector with the threshold values
         edge_image = cv.Canny(img, min_val, max_val, L2gradient=True)
+        # Print the values on the image
         cv.putText(edge_image, 'min' + str(min_val) + '   max' + str(max_val), (30, 30), font, 1, (255, 255, 255), 2,
                    cv.LINE_AA)
+        # Display it
         cv.imshow('Display', edge_image)
+        # Wait for the input
         k = cv.waitKey(0)
+        # Based on the input change the values or exit
         if k == ord('o'):
             min_val += 10
         elif k == ord('O'):
@@ -71,11 +77,11 @@ def visualise_canny_thresholds(img: np.ndarray):
 
 def draw_hough_lines(img: np.ndarray, lines: np.ndarray, line_number: int = 5) -> np.ndarray:
     """
-
-    :param line_number:
-    :param img:
-    :param lines:
-    :return:
+    Draws the lines defined by rho and theta
+    :param line_number: How many line needs to be printed on the image
+    :param img: Image to draw on
+    :param lines: rho and theta pairs in a matrix
+    :return: result image with the lines
     """
     lines = lines[0:line_number]
     for line in lines:
@@ -94,11 +100,11 @@ def draw_hough_lines(img: np.ndarray, lines: np.ndarray, line_number: int = 5) -
 
 def draw_general_line(img: np.ndarray, line_params: tuple, color=None) -> np.ndarray:
     """
-
-    :param color:
-    :param img:
-    :param line_params:
-    :return:
+    Draws a line given with general form (m and b params)
+    :param color:Color of the line
+    :param img: Image to draw on
+    :param line_params: m and b param pair
+    :return: result image with the lines
     """
     if color is None:
         color = [0, 0, 255]
