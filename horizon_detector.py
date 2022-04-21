@@ -18,9 +18,9 @@ FINE_SEARCH_WIDTH = 400
 
 def canny_plus_hough_method(pic_paths: [str], render: bool = True) -> List[Tuple[np.ndarray, str]]:
     """
-
-    :param render:
-    :param pic_paths:
+    Run the canny edge detector with the hough transform to identify the most prominent line in the picture
+    :param render: if render is required needs to be set
+    :param pic_paths: Path to the pictures 
     :return:
     """
     output_pics = []
